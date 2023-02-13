@@ -8,7 +8,8 @@ from app.repositories.post import PostRepository
 
 app = FastAPI()
 
-@app.get("/system/health")
+@app.get("/system/health", tags=["system"], summary="Get health status",
+    description="Get health status of the system")
 def get_health():
     return {"health": "OK"}
 
@@ -27,9 +28,12 @@ class BlogPost(BaseModel):
     )
     created_at: Optional[datetime] = Field(
         description="Date and time when the post was created",
+        alias="createdAt",
     )
 
-@app.post("/post")
+@app.post("/post", response_model=BlogPost, status_code=201,
+    tags=["post"], summary="Create a new post",
+    description="Create a new post")
 def create_post(post: BlogPost):
     post.created_at = datetime.now()
     post_repository = PostRepository()
