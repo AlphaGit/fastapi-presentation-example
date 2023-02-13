@@ -6,7 +6,30 @@ from pydantic import BaseModel, Field
 
 from app.repositories.post import PostRepository
 
-app = FastAPI()
+app = FastAPI(
+    title="Blog API",
+    description="API for a blog.",
+    version="0.1.0",
+    contact={
+        "name": "JD",
+        "url": "https://blog.alphasmanifesto.com",
+        "email": "jraimondi@makingsense.com"
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT"
+    },
+    openapi_tags=[
+        {
+            "name": "system",
+            "description": "System health and status",
+        },
+        {
+            "name": "post",
+            "description": "Operations related to posts",
+        },
+    ]
+)
 
 @app.get("/system/health", tags=["system"], summary="Get health status",
     description="Get health status of the system")
