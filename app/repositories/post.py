@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 class PostRepository():
     last_id = 0
     db = {}
@@ -5,9 +8,14 @@ class PostRepository():
 
     def create(self, post):
         PostRepository.last_id += 1
-        post.id = PostRepository.last_id
-        PostRepository.db.get('posts')[post.id] = post
-        return post
+        post_id = PostRepository.last_id
+
+        post_dict = post.dict()
+        post_dict['id'] = post_id
+        post_dict['createdAt'] = datetime.now()
+        PostRepository.db.get('posts')[post_id] = post_dict
+
+        return post_dict
 
     def get(self, post_id):
         return PostRepository.db.get('posts')[post_id]
@@ -16,8 +24,9 @@ class PostRepository():
         return list(PostRepository.db.get('posts').values())
 
     def update(self, post_id, post):
-        PostRepository.db.get('posts')[post_id] = post
-        return post
+        post_dict = post.dict()
+        PostRepository.db.get('posts')[post_id] = post_dict
+        return post_dict
 
     def delete(self, post_id):
         del PostRepository.db.get('posts')[post_id]

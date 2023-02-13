@@ -11,7 +11,21 @@ router = APIRouter(
     tags=["post"],
 )
 
-class BlogPost(BaseModel):
+class ModifyBlogPostRequest(BaseModel):
+    title: str = Field(
+        min_length=3,
+        max_length=200,
+        example="First post",
+        description="Title of the post",
+    )
+    content: str = Field(
+        min_length=3,
+        max_length=2_000,
+        example="This is my first post",
+        description="Content of the post",
+    )
+
+class BlogPostResponse(BaseModel):
     id: Optional[int] = Field(
         description="Id of the post",
         alias="id",
@@ -33,34 +47,37 @@ class BlogPost(BaseModel):
         alias="createdAt",
     )
 
-@router.post("/", response_model=BlogPost, status_code=201,
+@router.post("/", response_model=BlogPostResponse, status_code=201,
     tags=["post"], summary="Create a new post",
     description="Create a new post")
-def create_post(post: BlogPost):
-    post.created_at = datetime.now()
+def create_post(post: ModifyBlogPostRequest):
     post_repository = PostRepository()
-    return post_repository.create(post)
+    result = post_repository.create(post)
+    return BlogPostResponse(**result)
 
-@router.get("/{post_id}", response_model=BlogPost, status_code=200,
+@router.get("/{post_id}", response_model=BlogPostResponse, status_code=200,
     tags=["post"], summary="Get a post by id",
     description="Get a post by id")
 def get_post(post_id: int):
     post_repository = PostRepository()
-    return post_repository.get(post_id)
+    result = post_repository.get(post_id)
+    return BlogPostResponse(**result)
 
-@router.get("/", response_model=list[BlogPost], status_code=200,
+@router.get("/", response_model=list[BlogPostResponse], status_code=200,
     tags=["post"], summary="Get all posts",
     description="Get all posts")
 def get_all_posts():
     post_repository = PostRepository()
-    return post_repository.get_all()
+    result = post_repository.get_all()
+    return [BlogPostResponse(**post) for post in result]
 
-@router.put("/{post_id}", response_model=BlogPost, status_code=200,
+@router.put("/{post_id}", response_model=BlogPostResponse, status_code=200,
     tags=["post"], summary="Update a post by id",
     description="Update a post by id")
-def update_post(post_id: int, post: BlogPost):
+def update_post(post_id: int, post: ModifyBlogPostRequest):
     post_repository = PostRepository()
-    return post_repository.update(post_id, post)
+    result = post_repository.update(post_id, post)
+    return BlogPostResponse(**result)
 
 @router.delete("/{post_id}", status_code=204,
     tags=["post"], summary="Delete a post by id",
