@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from app.repositories.post import PostRepository
@@ -50,38 +50,33 @@ class BlogPostResponse(BaseModel):
 @router.post("/", response_model=BlogPostResponse, status_code=201,
     tags=["post"], summary="Create a new post",
     description="Create a new post")
-def create_post(post: ModifyBlogPostRequest):
-    post_repository = PostRepository()
-    result = post_repository.create(post)
+def create_post(post: ModifyBlogPostRequest, db: PostRepository = Depends()):
+    result = db.create(post)
     return BlogPostResponse(**result)
 
 @router.get("/{post_id}", response_model=BlogPostResponse, status_code=200,
     tags=["post"], summary="Get a post by id",
     description="Get a post by id")
-def get_post(post_id: int):
-    post_repository = PostRepository()
-    result = post_repository.get(post_id)
+def get_post(post_id: int, db: PostRepository = Depends()):
+    result = db.get(post_id)
     return BlogPostResponse(**result)
 
 @router.get("/", response_model=list[BlogPostResponse], status_code=200,
     tags=["post"], summary="Get all posts",
     description="Get all posts")
-def get_all_posts():
-    post_repository = PostRepository()
-    result = post_repository.get_all()
+def get_all_posts(db: PostRepository = Depends()):
+    result = db.get_all()
     return [BlogPostResponse(**post) for post in result]
 
 @router.put("/{post_id}", response_model=BlogPostResponse, status_code=200,
     tags=["post"], summary="Update a post by id",
     description="Update a post by id")
-def update_post(post_id: int, post: ModifyBlogPostRequest):
-    post_repository = PostRepository()
-    result = post_repository.update(post_id, post)
+def update_post(post_id: int, post: ModifyBlogPostRequest, db: PostRepository = Depends()):
+    result = db.update(post_id, post)
     return BlogPostResponse(**result)
 
 @router.delete("/{post_id}", status_code=204,
     tags=["post"], summary="Delete a post by id",
     description="Delete a post by id")
-def delete_post(post_id: int):
-    post_repository = PostRepository()
-    post_repository.delete(post_id)
+def delete_post(post_id: int, db: PostRepository = Depends()):
+    db.delete(post_id)
