@@ -23,6 +23,10 @@ class PostRepository():
     def get_all(self):
         return list(PostRepository.db.get('posts').values())
 
+    def get_page(self, page, page_size):
+        posts = PostRepository.db.get('posts')
+        return list(posts.values())[(page - 1) * page_size:page * page_size]
+
     def update(self, post_id, post):
         post_dict = post.dict()
         PostRepository.db.get('posts')[post_id] = post_dict

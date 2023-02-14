@@ -47,6 +47,20 @@ class BlogPostResponse(BaseModel):
         alias="createdAt",
     )
 
+class PaginationRequest(BaseModel):
+    page: int = Field(
+        gt=0,
+        example=1,
+        description="Page number",
+    )
+    page_size: int = Field(
+        gt=0,
+        lt=100,
+        example=10,
+        description="Number of items per page",
+        alias="pageSize",
+    )
+
 @router.post("/", response_model=BlogPostResponse, status_code=201,
     tags=["post"], summary="Create a new post",
     description="Create a new post")
@@ -62,10 +76,10 @@ def get_post(post_id: int, db: PostRepository = Depends()):
     return BlogPostResponse(**result)
 
 @router.get("/", response_model=list[BlogPostResponse], status_code=200,
-    tags=["post"], summary="Get all posts",
-    description="Get all posts")
-def get_all_posts(db: PostRepository = Depends()):
-    result = db.get_all()
+    tags=["post"], summary="Get all posts (paginated)",
+    description="Get all posts (paginated)")
+def get_all_posts_paginated(db: PostRepository = Depends(), pagination: PaginationRequest = Depends()):
+    result = db.get_page(pagination.page, pagination.page_size)
     return [BlogPostResponse(**post) for post in result]
 
 @router.put("/{post_id}", response_model=BlogPostResponse, status_code=200,
