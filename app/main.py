@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 
 from .post_routes import router as post_router
 from .system_routes import router as system_router
-from .users import router as users_router
+from .users import router as users_router, oauth2_scheme
 
 app = FastAPI(
     title="Blog API",
@@ -33,6 +33,6 @@ app = FastAPI(
     ]
 )
 
-app.include_router(system_router)
-app.include_router(post_router)
-app.include_router(users_router)
+app.include_router(system_router, dependencies=[Depends(oauth2_scheme)])
+app.include_router(post_router, dependencies=[Depends(oauth2_scheme)])
+app.include_router(users_router, dependencies=[])

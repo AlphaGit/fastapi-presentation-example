@@ -2,12 +2,9 @@ from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends
-from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel, Field
 
 from app.repositories.post import PostRepository
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 router = APIRouter(
     prefix="/post",
@@ -66,8 +63,7 @@ class PaginationRequest(BaseModel):
 
 @router.post("/", response_model=BlogPostResponse, status_code=201,
     tags=["post"], summary="Create a new post",
-    description="Create a new post",
-    dependencies=[Depends(oauth2_scheme)])
+    description="Create a new post")
 def create_post(post: ModifyBlogPostRequest, db: PostRepository = Depends()):
     result = db.create(post)
     return BlogPostResponse(**result)

@@ -34,7 +34,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> UserModel:
 async def get_me(current_user: UserModel = Depends(get_current_user)):
     return current_user
 
-@router.post('/login')
+@router.post('/login', dependencies=[])
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     # in a real app, we'd do some real authentication here
     return {"access_token": f"Token for {form_data.username}", "token_type": "bearer"}
