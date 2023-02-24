@@ -11,6 +11,9 @@ class PostRepository():
         post_id = PostRepository.last_id
 
         post_dict = post.dict()
+        return self._inner_create(post_id, post)
+
+    def _inner_create(self, post_id, post_dict):
         post_dict['id'] = post_id
         post_dict['createdAt'] = datetime.now()
         PostRepository.db.get('posts')[post_id] = post_dict
@@ -34,3 +37,11 @@ class PostRepository():
 
     def delete(self, post_id):
         del PostRepository.db.get('posts')[post_id]
+
+    def seed(self):
+        for i in range(100):
+            post = {
+                'title': f'Post #{i}',
+                'content': f'Content of post #{i}',
+            }
+            self._inner_create(i, post)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from pydantic import BaseModel, Field
 
 from app.repositories.post import PostRepository
@@ -94,3 +94,8 @@ def update_post(post_id: int, post: ModifyBlogPostRequest, db: PostRepository = 
     description="Delete a post by id")
 def delete_post(post_id: int, db: PostRepository = Depends()):
     db.delete(post_id)
+
+@router.post("/seed", status_code=204, tags=["post"], summary="Seed posts",
+             description="Seed posts (create initial database)")
+def seed_posts(background_tasks: BackgroundTasks, db: PostRepository = Depends()):
+    background_tasks.add_task(db.seed)
