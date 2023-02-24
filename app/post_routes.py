@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 from app.repositories.post import PostRepository
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 router = APIRouter(
     prefix="/post",

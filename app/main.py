@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from .post_routes import router as post_router
 from .system_routes import router as system_router
+from .users import router as users_router
 
 app = FastAPI(
     title="Blog API",
@@ -25,8 +26,13 @@ app = FastAPI(
             "name": "post",
             "description": "Operations related to posts",
         },
+        {
+            "name": "users",
+            "description": "Operations related to users",
+        },
     ]
 )
 
 app.include_router(system_router)
 app.include_router(post_router)
+app.include_router(users_router)
